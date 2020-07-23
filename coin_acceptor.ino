@@ -94,7 +94,7 @@ void loop() {
         
   if (pulses > 0 && timeFromLastPulse > 300)
   {
-    //check for doubles
+    //check for doubles for fast coins
     
     // sequence of pulses stopped; determine the coin type;
    // if (pulses == 2)
@@ -104,18 +104,38 @@ void loop() {
   //  }
      if (pulses == 3)
     {
-      Serial.println("Received quarter (5 pulses)");
+      Serial.println("Received quarter (3 pulses)");
       money += .25;
     }
-    else if (pulses == 4)
+        else if (pulses == 6)
     {
-      Serial.println("Received looney (10 pulses)");
+      Serial.println("Received 50 cents (6 pulses)");
+      money += .50;
+    }
+    else if (pulses == 9)
+    {
+      Serial.println("Received 75 cents (9 pulses)");
+      money += .75;
+    }
+    else if (pulses == 4) //10 pulses
+    {
+      Serial.println("Received looney (5 pulses)");
       money += 1.0;
+    }
+    else if (pulses == 8) 
+    {
+      Serial.println("Received 2looney (10 pulses)");
+      money += 2.0;
     }
     else if (pulses == 5)
     {
-      Serial.println("Received tooney (15 pulses)");
+      Serial.println("Received tooney (5 pulses)");
       money += 2.0;
+    }
+        else if (pulses == 10) //15 pulses
+    {
+      Serial.println("Received 2tooney (10 pulses)");
+      money += 4.0;
     }
     else
     {
