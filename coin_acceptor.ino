@@ -10,15 +10,21 @@
    Twitter:    https://twitter.com/BasOnTech
    
 */
+// some of the code is copyrighted for now until i can rewrite then it will be lgpl
+//https://github.com/BasOnTech/Arduino-Beginners-EN/tree/master/E30-sound-sensor
+//http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
+
+//method is opensource feel free to rewrite code, or wait until i can do it.
+
 
 
 const int OUT_PIN = 8;
-const int SAMPLE_TIME = 60;
+const int SAMPLE_TIME = 50;
 unsigned long millisCurrent;
 unsigned long millisLast = 0;
 unsigned long millisElapsed = 0;
 
-const int threshold1 = 300;
+const int threshold1 = 290;
 const int threshold2 = 1000;
 const int threshold3 = 8000;
 
@@ -92,7 +98,7 @@ void loop() {
   
         long timeFromLastPulse = millis() - timeLastPulse;
         
-  if (pulses > 0 && timeFromLastPulse > 300)
+  if (pulses > 0 && timeFromLastPulse > 400)
   {
     //check for doubles for fast coins
     
