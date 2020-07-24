@@ -4,7 +4,10 @@
 //http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
 
 // i2c extender code for lcd
-//#define IRSENSOR
+//#define IRSENSOR   //TCRT5000 IR SENSOR hotglued to bottom of unit on left side
+
+
+
 
 
 const int COINPIN = 8;
