@@ -24,7 +24,7 @@ unsigned long millisCurrent;
 unsigned long millisLast = 0;
 unsigned long millisElapsed = 0;
 
-const int threshold1 = 290;
+const int threshold1 = 285;
 const int threshold2 = 1000;
 const int threshold3 = 8000;
 
@@ -98,7 +98,7 @@ void loop() {
   
         long timeFromLastPulse = millis() - timeLastPulse;
         
-  if (pulses > 0 && timeFromLastPulse > 400)
+  if (pulses > 0 && timeFromLastPulse > 330)
   {
     //check for doubles for fast coins
     
