@@ -1,35 +1,29 @@
+//credits for code
+//feel free to use however you see fit
 //https://github.com/olavxxx/Arduino-Sound-Sensor/blob/master/Soundsensor/Soundsensor.ino
 //http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
 
-//method is opensource feel free to rewrite code, or wait until i can do it.
+// i2c extender code for lcd
 
 
 
 const int COINPIN = 8;
-
 const int threshold1 = 620;
-
 const int sampleWindow = 100; // Sample window width in mS (50 mS = 20Hz)
-unsigned int sample;
 
+unsigned int sample;
+int samplebuffer = 0;
 int count=0; //idle loop counter
 float money = 0.0;
-
-// gets incremented by the ISR;
-// gets reset when coin was recognized (after train of pulses ends);
 volatile int pulses = 0;
 volatile long timeLastPulse = 0;
-
-int samplebuffer = 0;
 
 
 void setup() {
   Serial.begin(9600);
-    pinMode(COINPIN, INPUT);
+  pinMode(COINPIN, INPUT);
   pinMode(COINPIN,INPUT_PULLUP);
-  
 }
-
 
 
 void loop() {
@@ -39,7 +33,7 @@ void loop() {
    while (millis() - startMillis < sampleWindow)
    {
       sample = digitalRead(COINPIN);
-      if (sample < 1)  // toss out spurious readings
+      if (sample < 1)
       {
        // Serial.println(samplebuffer);
             samplebuffer++;
@@ -50,14 +44,11 @@ void loop() {
    {
         Serial.println(samplebuffer);
         pulses++;
-          timeLastPulse = millis();
-         //   Serial.println("Knock1!");
-         count=0;
+        timeLastPulse = millis();
+        count=0;
    }
-   else{count++;}
+   else{count++; //idle counter}
 
-
-    
   if (startMillis > sampleWindow) {
     samplebuffer = 0;
   }
@@ -67,20 +58,12 @@ void loop() {
       
   if (pulses > 0 && timeFromLastPulse > 180)
   {
-    //check for doubles for fast coins
-    
-    // sequence of pulses stopped; determine the coin type;
-   // if (pulses == 2)
-  //  {
-  //    Serial.println("Received dime (2 pulses)");
-  //    money += .1;
-  //  }
-     if (pulses == 3)
+    if (pulses == 3)
     {
       Serial.println("Received quarter (3 pulses)");
       money += .25;
     }
-        else if (pulses == 6)
+    else if (pulses == 6)
     {
       Serial.println("Received 50 cents (6 pulses)");
       money += .50;
@@ -100,7 +83,7 @@ void loop() {
       Serial.println("Received 2looney (8 pulses)");
       money += 2.0;
     }
-        else if (pulses == 7)
+    else if (pulses == 7)
     {
       Serial.println("Received 1.25 (7 pulses)");
       money += 1.25;
@@ -110,20 +93,12 @@ void loop() {
       Serial.println("Received tooney (8 pulses)");
       money += 2.0;
     }
-        else if (pulses == 16) //15 pulses
+    else if (pulses == 16) //15 pulses
     {
       Serial.println("Received 2tooney (16 pulses)");
       money += 4.0;
-    }
-    else
-    {
-     Serial.print("Unknown coin: ");
-      Serial.print(pulses);
-      Serial.println(" pulses");
-      
-      // add 1 to total to try and make a coin
-    }
-   // count=0;
+    } else  { Serial.print("Unknown coin: "); Serial.print(pulses); Serial.println(" pulses"); }
+    
     pulses = 0;
     timeFromLastPulse=0;
     timeLastPulse=0;
