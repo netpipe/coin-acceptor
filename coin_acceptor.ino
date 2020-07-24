@@ -4,13 +4,15 @@
 //http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
 
 // i2c extender code for lcd
-
+//#define IRSENSOR
 
 
 const int COINPIN = 8;
 const int threshold1 = 620;
 const int sampleWindow = 100; // Sample window width in mS (50 mS = 20Hz)
 
+int oldpulses=0;
+int counter=0;
 unsigned int sample;
 int samplebuffer = 0;
 int count=0; //idle loop counter
@@ -21,17 +23,29 @@ volatile long timeLastPulse = 0;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(COINPIN, INPUT);
+  //pinMode(COINPIN, INPUT);
   pinMode(COINPIN,INPUT_PULLUP);
+  //pinMode(0,INPUT);
+  //pinMode(0,INPUT_PULLUP);
 }
 
 
 void loop() {
   
    unsigned long startMillis= millis();  // Start of sample window
-   
+
    while (millis() - startMillis < sampleWindow)
    {
+     #ifdef IRSENSOR
+        if (samplebuffer < 10 && oldpulses < pulses + 1){
+           if (digitalRead(0) < 1){
+              counter++;
+              oldpulses=pulses+1;
+             Serial.println("IRPULSE");
+           }
+        }
+        #endif
+        
       sample = digitalRead(COINPIN);
       if (sample < 1)
       {
@@ -46,6 +60,7 @@ void loop() {
         pulses++;
         timeLastPulse = millis();
         count=0;
+
    }
    else{count++; }//idle counter
 
@@ -53,6 +68,8 @@ void loop() {
     samplebuffer = 0;
   }
   
+ // Serial.println(digitalRead(0));
+
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
@@ -102,8 +119,14 @@ void loop() {
     }
     else if (pulses == 12)
     {
-    //  Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
-     // money += 3.00;
+      if (counter == 2){
+          Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
+          money += 3.00;
+      }
+      if (counter == 4){
+          Serial.println("Received 3 quarters (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
+          money += 1.00;
+      }
     }
     else if (pulses == 15) //15 pulses
     {
@@ -125,15 +148,17 @@ void loop() {
       Serial.println("Received 3tooney (24 pulses)");
       money += 6.0;
     } else  { Serial.print("Unknown coin: "); Serial.print(pulses); Serial.println(" pulses"); }
-    
+    counter=0;
     pulses = 0;
     timeFromLastPulse=0;
     timeLastPulse=0;
+    oldpulses=0;
 
   }else{ if (count > 100) { delay(4);  Serial.println("money"); Serial.println(money); }}  //idle detector
         
           
 }
+
 
 
 
