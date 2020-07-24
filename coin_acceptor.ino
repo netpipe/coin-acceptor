@@ -7,11 +7,12 @@
 
 const int COINPIN = 8;
 
-const int threshold1 = 700;
+const int threshold1 = 620;
 
-const int sampleWindow = 50; // Sample window width in mS (50 mS = 20Hz)
+const int sampleWindow = 100; // Sample window width in mS (50 mS = 20Hz)
 unsigned int sample;
 
+int count=0; //idle loop counter
 float money = 0.0;
 
 // gets incremented by the ISR;
@@ -50,8 +51,10 @@ void loop() {
         Serial.println(samplebuffer);
         pulses++;
           timeLastPulse = millis();
-            Serial.println("Knock1!");
+         //   Serial.println("Knock1!");
+         count=0;
    }
+   else{count++;}
 
 
     
@@ -62,7 +65,7 @@ void loop() {
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
-  if (pulses > 0 && timeFromLastPulse > 365)
+  if (pulses > 0 && timeFromLastPulse > 180)
   {
     //check for doubles for fast coins
     
@@ -89,22 +92,27 @@ void loop() {
     }
     else if (pulses == 4) //10 pulses
     {
-      Serial.println("Received looney (5 pulses)");
+      Serial.println("Received looney (4 pulses)");
       money += 1.0;
     }
     else if (pulses == 8) 
     {
-      Serial.println("Received 2looney (10 pulses)");
+      Serial.println("Received 2looney (8 pulses)");
       money += 2.0;
     }
-    else if (pulses == 5)
+        else if (pulses == 7)
     {
-      Serial.println("Received tooney (5 pulses)");
+      Serial.println("Received 1.25 (7 pulses)");
+      money += 1.25;
+    }
+    else if (pulses == 8)
+    {
+      Serial.println("Received tooney (8 pulses)");
       money += 2.0;
     }
-        else if (pulses == 10) //15 pulses
+        else if (pulses == 16) //15 pulses
     {
-      Serial.println("Received 2tooney (10 pulses)");
+      Serial.println("Received 2tooney (16 pulses)");
       money += 4.0;
     }
     else
@@ -115,17 +123,17 @@ void loop() {
       
       // add 1 to total to try and make a coin
     }
-
+   // count=0;
     pulses = 0;
     timeFromLastPulse=0;
     timeLastPulse=0;
 
-  }
-
-  
+  }else{ if (count > 100) { delay(20); }}
+  //idle detector
    //delay(2);
           
           
 }
+
 
 
