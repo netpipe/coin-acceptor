@@ -47,7 +47,7 @@ void loop() {
         timeLastPulse = millis();
         count=0;
    }
-   else{count++; //idle counter}
+   else{count++; }//idle counter
 
   if (startMillis > sampleWindow) {
     samplebuffer = 0;
@@ -56,8 +56,10 @@ void loop() {
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
-  if (pulses > 0 && timeFromLastPulse > 180)
+  if (pulses > 0 && timeFromLastPulse > 100)
   {
+    // single and double pulse available aswell but sometimes are triggered accidently when putting coins in fast
+    // might be ok to use with larger 100ms sample window now.
     if (pulses == 3)
     {
       Serial.println("Received quarter (3 pulses)");
@@ -80,7 +82,7 @@ void loop() {
     }
     else if (pulses == 8) 
     {
-      Serial.println("Received 2looney (8 pulses)");
+      Serial.println("Received toonie (8 pulses)");
       money += 2.0;
     }
     else if (pulses == 7)
@@ -88,25 +90,48 @@ void loop() {
       Serial.println("Received 1.25 (7 pulses)");
       money += 1.25;
     }
-    else if (pulses == 8)
+    else if (pulses == 10)
     {
-      Serial.println("Received tooney (8 pulses)");
-      money += 2.0;
+      Serial.println("Received 1.50 (10 pulses)");
+      money += 1.50;
+    }
+    else if (pulses == 11)
+    {
+      Serial.println("Received 2.25 (11 pulses)");
+      money += 2.25;
+    }
+    else if (pulses == 12)
+    {
+    //  Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap toonies for quarters
+     // money += 3.00;
+    }
+    else if (pulses == 15) //15 pulses
+    {
+      Serial.println("Received 5quarters (16 pulses)");
+      money += 1.25;
     }
     else if (pulses == 16) //15 pulses
     {
       Serial.println("Received 2tooney (16 pulses)");
       money += 4.0;
+    }
+        else if (pulses == 20) //15 pulses
+    {
+      Serial.println("Received 2tooney (20 pulses)");
+      money += 3.0;
+    }
+    else if (pulses == 24) //15 pulses
+    {
+      Serial.println("Received 3tooney (24 pulses)");
+      money += 6.0;
     } else  { Serial.print("Unknown coin: "); Serial.print(pulses); Serial.println(" pulses"); }
     
     pulses = 0;
     timeFromLastPulse=0;
     timeLastPulse=0;
 
-  }else{ if (count > 100) { delay(5);  Serial.println(" sleep");}}
-  //idle detector
-   //delay(2);
-          
+  }else{ if (count > 100) { delay(4);  Serial.println("money"); Serial.println(money); }}  //idle detector
+        
           
 }
 
