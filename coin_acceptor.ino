@@ -56,7 +56,7 @@ void loop() {
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
-  if (pulses > 0 && timeFromLastPulse > 100)
+  if (pulses > 0 && timeFromLastPulse > 150)
   {
     // single and double pulse available aswell but sometimes are triggered accidently when putting coins in fast
     // might be ok to use with larger 100ms sample window now.
@@ -102,7 +102,7 @@ void loop() {
     }
     else if (pulses == 12)
     {
-    //  Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap toonies for quarters
+    //  Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
      // money += 3.00;
     }
     else if (pulses == 15) //15 pulses
