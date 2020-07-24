@@ -128,7 +128,7 @@ void loop() {
     timeFromLastPulse=0;
     timeLastPulse=0;
 
-  }else{ if (count > 100) { delay(20); }}
+  }else{ if (count > 100) { delay(5);  Serial.println(" sleep");}}
   //idle detector
    //delay(2);
           
