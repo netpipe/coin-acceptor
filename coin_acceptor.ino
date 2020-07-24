@@ -19,7 +19,7 @@
 
 
 const int OUT_PIN = 8;
-const int SAMPLE_TIME = 50;
+const int SAMPLE_TIME = 40;
 unsigned long millisCurrent;
 unsigned long millisLast = 0;
 unsigned long millisElapsed = 0;
@@ -98,7 +98,7 @@ void loop() {
   
         long timeFromLastPulse = millis() - timeLastPulse;
         
-  if (pulses > 0 && timeFromLastPulse > 330)
+  if (pulses > 0 && timeFromLastPulse > 365)
   {
     //check for doubles for fast coins
     
