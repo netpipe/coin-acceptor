@@ -1,19 +1,32 @@
-
+/*
+   Bas on Tech
+   This course is part of the courses on https://arduino-tutorials.net
+   (c) Copyright 2020 - Bas van Dijk / Bas on Tech
+   This code and course is copyrighted. It is not allowed to use these courses commercially
+   without explicit written approval
+   YouTube:    https://www.youtube.com/c/BasOnTech
+   Facebook:   https://www.facebook.com/BasOnTechChannel
+   Instagram:  https://www.instagram.com/BasOnTech
+   Twitter:    https://twitter.com/BasOnTech
+   
+*/
 // some of the code is copyrighted for now until i can rewrite then it will be lgpl
-//https://github.com/BasOnTech/Arduino-Beginners-EN/tree/master/E30-sound-sensor  -- not used anymore
-//https://github.com/olavxxx/Arduino-Sound-Sensor/blob/master/Soundsensor/Soundsensor.ino
+//https://github.com/BasOnTech/Arduino-Beginners-EN/tree/master/E30-sound-sensor
 //http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
 
 //method is opensource feel free to rewrite code, or wait until i can do it.
 
 
 
-const int COINPIN = 8;
+const int OUT_PIN = 8;
+const int SAMPLE_TIME = 60;
+unsigned long millisCurrent;
+unsigned long millisLast = 0;
+unsigned long millisElapsed = 0;
 
 const int threshold1 = 285;
-
-const int sampleWindow = 50; // Sample window width in mS (50 mS = 20Hz)
-unsigned int sample;
+const int threshold2 = 1000;
+const int threshold3 = 8000;
 
 float money = 0.0;
 
@@ -22,7 +35,9 @@ float money = 0.0;
 volatile int pulses = 0;
 volatile long timeLastPulse = 0;
 
-int samplebuffer = 0;
+// if loud then residual dont count them knock3
+
+int sampleBufferValue = 0;
 
 
 void setup() {
@@ -36,38 +51,53 @@ int count=0;
 int count2=0;
 
 
-
-
-
 void loop() {
-  
-   unsigned long startMillis= millis();  // Start of sample window
-   while (millis() - startMillis < sampleWindow)
+
+  millisCurrent = millis();
+  millisElapsed = millisCurrent - millisLast;
+
+  if (digitalRead(OUT_PIN) == LOW) {
+    sampleBufferValue++;
+  }
+
+
+  if (millisElapsed > SAMPLE_TIME) {
+    // start processing loop
+
+    
+    if (sampleBufferValue > 0){
+    //Serial.println(sampleBufferValue);
+    
+    if (sampleBufferValue >= threshold1) 
    {
-      sample = digitalRead(COINPIN);
-      if (sample < 290)  // toss out spurious readings
-      {
-            samplebuffer++;
-      }
-   }
-   
-    if (samplebuffer >= threshold1) 
-   {
-        Serial.println(samplebuffer);
+        Serial.println(sampleBufferValue);
+       // count++;
         pulses++;
           timeLastPulse = millis();
+         //   Serial.println(count);
             Serial.println("Knock1!");
+      if (sampleBufferValue >= threshold2) 
+       {
+            Serial.println("Knock2!");
+          //  pulses++;
+          if (sampleBufferValue >= threshold3) 
+          {
+            Serial.println("Knock3!");
+          }
+        }
    }
+   }
+    
+    
+  }
 
-
-  if (startMillis < sampleWindow) {
-    samplebuffer = 0;
+  if (millisElapsed > SAMPLE_TIME) {
+    sampleBufferValue = 0;
+    millisLast = millisCurrent;
   }
   
-  
-  
-  long timeFromLastPulse = millis() - timeLastPulse;
-      
+        long timeFromLastPulse = millis() - timeLastPulse;
+        
   if (pulses > 0 && timeFromLastPulse > 365)
   {
     //check for doubles for fast coins
@@ -122,16 +152,17 @@ void loop() {
       // add 1 to total to try and make a coin
     }
 
-    pulses = 0;
+     pulses = 0;
     timeFromLastPulse=0;
     timeLastPulse=0;
 
   }
   
   
-   delay(2);
+         // delay(8);        // delay in between reads for stability
           
           
 }
+
 
 
