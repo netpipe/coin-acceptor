@@ -19,7 +19,7 @@
 
 
 const int OUT_PIN = 8;
-const int SAMPLE_TIME = 40;
+const int SAMPLE_TIME = 60;
 unsigned long millisCurrent;
 unsigned long millisLast = 0;
 unsigned long millisElapsed = 0;
