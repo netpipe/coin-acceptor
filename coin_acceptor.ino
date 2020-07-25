@@ -4,14 +4,11 @@
 //http://timewitharduino.blogspot.com/2014/01/isr-based-sketch-for-adafruit-coin.html
 
 // i2c extender code for lcd
-//#define IRSENSOR   //TCRT5000 IR SENSOR hotglued to bottom of unit on left side
+//#define IRSENSOR   //TCRT5000 IR SENSOR module from ebay hotglued to bottom of unit on left side and connected to D0
 
-
-
-
-
+const int IRPIN = 0;
 const int COINPIN = 8;
-const int threshold1 = 620;
+const int threshold1 = 620;    // higher value for larger sample window
 const int sampleWindow = 100; // Sample window width in mS (50 mS = 20Hz)
 
 int oldpulses=0;
@@ -22,14 +19,12 @@ int count=0; //idle loop counter
 float money = 0.0;
 volatile int pulses = 0;
 volatile long timeLastPulse = 0;
+//string pulsestring;
 
 
 void setup() {
   Serial.begin(9600);
-  //pinMode(COINPIN, INPUT);
   pinMode(COINPIN,INPUT_PULLUP);
-  //pinMode(0,INPUT);
-  //pinMode(0,INPUT_PULLUP);
 }
 
 
@@ -41,9 +36,10 @@ void loop() {
    {
      #ifdef IRSENSOR
         if (samplebuffer < 10 && oldpulses < pulses + 1){
-           if (digitalRead(0) < 1){
+           if (digitalRead(IRPIN) < 1){
               counter++;
               oldpulses=pulses+1;
+             // pulsestring+=0;
              Serial.println("IRPULSE");
            }
         }
@@ -61,6 +57,7 @@ void loop() {
    {
         Serial.println(samplebuffer);
         pulses++;
+       // pulsestring+=1;
         timeLastPulse = millis();
         count=0;
 
@@ -76,7 +73,7 @@ void loop() {
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
-  if (pulses > 0 && timeFromLastPulse > 150)
+  if (pulses > 0 && timeFromLastPulse > 150) //set higher to be more accurate or if you are getting single and double pulse
   {
     // single and double pulse available aswell but sometimes are triggered accidently when putting coins in fast
     // might be ok to use with larger 100ms sample window now.
@@ -123,34 +120,35 @@ void loop() {
     else if (pulses == 12)
     {
       if (counter == 2){
-          Serial.println("Received 3.00 (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
+          Serial.println("Received 3.00 (12 pulses)"); 
           money += 3.00;
       }
       if (counter == 4){
-          Serial.println("Received 3 quarters (12 pulses)");  // has issues with quarters currently hitting it might swap loonies for quarters
+          Serial.println("Received 3 quarters (12 pulses)");
           money += 1.00;
       }
     }
-    else if (pulses == 15) //15 pulses
+    else if (pulses == 15)
     {
       Serial.println("Received 5quarters (16 pulses)");
       money += 1.25;
     }
-    else if (pulses == 16) //15 pulses
+    else if (pulses == 16)
     {
       Serial.println("Received 2tooney (16 pulses)");
       money += 4.0;
     }
-        else if (pulses == 20) //15 pulses
+        else if (pulses == 20) 
     {
       Serial.println("Received 2tooney (20 pulses)");
       money += 3.0;
     }
-    else if (pulses == 24) //15 pulses
+    else if (pulses == 24) 
     {
       Serial.println("Received 3tooney (24 pulses)");
       money += 6.0;
     } else  { Serial.print("Unknown coin: "); Serial.print(pulses); Serial.println(" pulses"); }
+    
     counter=0;
     pulses = 0;
     timeFromLastPulse=0;
