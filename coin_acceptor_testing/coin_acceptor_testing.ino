@@ -35,15 +35,15 @@ void loop() {
    while (millis() - startMillis < sampleWindow)
    {
      #ifdef IRSENSOR
-        if (samplebuffer < 50 && oldpulses < pulses + 1){
+        if (samplebuffer > 2 && oldpulses < pulses + 1){
            if (digitalRead(IRPIN) < 1){
              // counter++;
               oldpulses=pulses+1;
               pulsestring+=0;
-             Serial.println("IRPULSE");
+         //    Serial.println("IRPULSE");
            }
         }
-        #endif
+      #endif
         
       sample = digitalRead(COINPIN);
       if (sample < 1)
@@ -55,7 +55,8 @@ void loop() {
    
     if (samplebuffer >= threshold1) 
    {
-        Serial.println(samplebuffer);
+   //  Serial.println("pulse");
+    //    Serial.println(samplebuffer);
         pulses++;
         pulsestring+=1;
         timeLastPulse = millis();
@@ -73,20 +74,36 @@ void loop() {
   
   long timeFromLastPulse = millis() - timeLastPulse;
       
-  if (pulses > 0 && timeFromLastPulse > 1500) //set higher to be more accurate or if you are getting single and double pulse
+  if (pulses > 0 && timeFromLastPulse > 1000) //set higher to be more accurate or if you are getting single and double pulse
   {
      pulses = 0;
     for (int i=0;i < pulsestring.length(); i++){
+      Serial.println(pulsestring.c_str());
+      //Serial.println(pulsestring.length()-1); // exclude the irrpulse spacer
       
-      Serial.println(pulsestring.length());
-      String Test="0";
-        while(pulsestring.charAt(i) = Test.c_str() ){
-      pulses++;
-      i++; 
-      Serial.println(pulses);
+      String pulsestring2;
+
+      pulsestring2 += pulsestring.charAt(i);
+      Serial.println(pulsestring2.c_str());
       
-    }
-Serial.println(pulses);
+      if (pulsestring2 == "0"){
+              i++;
+              pulsestring2="";
+           pulsestring2 += pulsestring.charAt(i);
+           Serial.println("nextinstring");
+         }
+         
+        while(pulsestring2 == "1"){
+                pulsestring2="";
+              //  pulsestring2 += pulsestring.charAt(i);
+          pulses++;
+          i++; 
+          pulsestring2 += pulsestring.charAt(i);
+          Serial.println(pulses);
+      
+        }
+      pulsestring2="";
+     // Serial.println(pulses);
     
     if (pulses == 3)
     {
@@ -102,13 +119,13 @@ Serial.println(pulses);
           pulses = 0;
     }
     
-    if (pulses == 8+1)
+    if (pulses == 8)
     {
       Serial.println("Received toonie (8 pulses)");
       money += 2.0;
           pulses = 0;
     }
-    
+    pulses = 0;
 
   }
       //counter=0;
@@ -119,7 +136,9 @@ Serial.println(pulses);
     oldpulses=0;
   }
 
- //Serial.println(money);// }}  //idle detector
+ //Serial.println(money);
+ // }}  
+ //idle detector
         
           
 }
