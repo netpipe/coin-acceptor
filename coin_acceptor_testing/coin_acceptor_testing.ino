@@ -8,8 +8,8 @@
 
 const int IRPIN = 0;
 const int COINPIN = 8;
-const int threshold1 = 620;    // higher value for larger sample window
-const int sampleWindow = 150; // Sample window width in mS (50 mS = 20Hz)
+const int threshold1 = 350;    // higher value for larger sample window
+const int sampleWindow = 40; // Sample window width in mS (50 mS = 20Hz)
 
 int oldpulses=0;
 int counter=0;
@@ -20,8 +20,11 @@ float money = 0.0;
 volatile int pulses = 0;
 volatile long timeLastPulse = 0;
 String pulsestring;
-
-
+unsigned long startMillis;
+  unsigned long elapsedmilis=0;
+  unsigned long halfstart;
+  int bpulse=0;
+  
 void setup() {
   Serial.begin(9600);
   pinMode(COINPIN,INPUT_PULLUP);
@@ -30,43 +33,42 @@ void setup() {
 
 void loop() {
   
-   unsigned long startMillis= millis();  // Start of sample window
+   startMillis= millis();  // Start of sample window
 
-   while (millis() - startMillis < sampleWindow)
+   while ( elapsedmilis < sampleWindow)
    {
-     #ifdef IRSENSOR
-        if (samplebuffer > 2 && oldpulses < pulses + 1){
-           if (digitalRead(IRPIN) < 1){
-             // counter++;
-              oldpulses=pulses+1;
-              pulsestring+=0;
-         //    Serial.println("IRPULSE");
+           #ifdef IRSENSOR
+           if (bpulse != 1 && digitalRead(IRPIN) < 1 ){
+              counter++;
+              bpulse=1;
+             Serial.println("IRPULSE1");         
            }
-        }
-      #endif
+           #endif
         
-      sample = digitalRead(COINPIN);
-      if (sample < 1)
+      if (digitalRead(COINPIN) < 1)
       {
        // Serial.println(samplebuffer);
             samplebuffer++;
       }
+            elapsedmilis = millis() - startMillis;
    }
    
     if (samplebuffer >= threshold1) 
    {
    //  Serial.println("pulse");
-    //    Serial.println(samplebuffer);
+     //   Serial.println(samplebuffer);
         pulses++;
         pulsestring+=1;
         timeLastPulse = millis();
         count=0;
-
+        delay (100);  
    }
    else{count++; }//idle counter
 
-  if (startMillis > sampleWindow) {
+  if (elapsedmilis >= sampleWindow) {
     samplebuffer = 0;
+    elapsedmilis=0;
+    count++;      
   }
   
  // Serial.println(digitalRead(0));
@@ -134,7 +136,9 @@ void loop() {
     timeFromLastPulse=0;
     timeLastPulse=0;
     oldpulses=0;
-  }
+        bpulse=0;
+  }else{  if (count > 300) { counter=0; bpulse=0;  if (count > 600) {delay(4);  Serial.println("money"); Serial.println(money);
+  }}}  //idle detector
 
  //Serial.println(money);
  // }}  
@@ -142,6 +146,7 @@ void loop() {
         
           
 }
+
 
 
 
