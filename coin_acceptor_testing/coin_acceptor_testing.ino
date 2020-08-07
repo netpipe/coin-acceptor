@@ -41,6 +41,7 @@ void loop() {
            if (bpulse != 1 && digitalRead(IRPIN) < 1 ){
               counter++;
               bpulse=1;
+                pulsestring+=0;
              Serial.println("IRPULSE1");         
            }
            #endif

@@ -7,6 +7,7 @@
 #define IRSENSOR   //TCRT5000 IR SENSOR module from ebay hotglued to bottom of unit on left side and connected to D0
 
 //20 , 40,70 ms with 100 ms between
+
 //#define SLOW 70
 //#define MEDIUM 40
 #define FAST 20
@@ -61,7 +62,9 @@ void loop() {
       bpulse++;
     delay(10);      
     }
+
   #endif
+
 
     if (digitalRead(COINPIN) < 1)
     {
@@ -82,11 +85,13 @@ void loop() {
     delay (100);
   }
 
+  //if (elapsedmilis >= sampleWindow) {
     samplebuffer = 0;
     elapsedmilis=0;
     count++;
-    
-   #ifdef IRSENSOR
+    // oldcounter=0;
+ // }
+ #ifdef IRSENSOR
     if (count > 6 && bpulse != 0){
     //  Serial.println("IRPULSE2"); 
       Serial.println(counter); 
@@ -95,7 +100,7 @@ void loop() {
     count=0;
     delay(15); 
   }
-  #endif
+#endif
 
   timeFromLastPulse = millis() - timeLastPulse;
 
