@@ -93,7 +93,7 @@ void loop() {
     counter++;
     bpulse=0;
     count=0;
-    delay(20); 
+    delay(16); 
   }
   #endif
 
@@ -150,8 +150,9 @@ void loop() {
     }
     else if (pulses == 12)
     {
+      Serial.println("doozy");
       Serial.println(counter);
-      if (counter == 2){
+      if (counter < 4){
         Serial.println("Received 3.00 (12 pulses)"); 
         money += 3.00;
       }
