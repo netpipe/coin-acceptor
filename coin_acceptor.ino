@@ -57,9 +57,9 @@ void loop() {
   {
     
   #ifdef IRSENSOR
-    if (bpulse != 1 && digitalRead(IRPIN) < 1 ){
+    if (bpulse < 3 && digitalRead(IRPIN) < 1 ){
       bpulse++;
-    delay(10);      
+   // delay(5);      
     }
   #endif
 
@@ -87,13 +87,13 @@ void loop() {
     count++;
     
    #ifdef IRSENSOR
-    if (count > 6 && bpulse != 0){
+    if (bpulse >= 3){
     //  Serial.println("IRPULSE2"); 
       Serial.println(counter); 
     counter++;
     bpulse=0;
     count=0;
-    delay(15); 
+    delay(20); 
   }
   #endif
 
