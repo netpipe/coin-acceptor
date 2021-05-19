@@ -6,3 +6,6 @@ cost was about 20 dollars on ebay, could use a metal faceplate with a bit of met
 https://www.youtube.com/watch?v=plG0ZpbN--s programming instructions
 
 be sure to set to normally open and medium speed
+
+
+https://github.com/netpipe/OSMMAC
